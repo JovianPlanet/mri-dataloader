@@ -1,0 +1,8 @@
+*.pyc
+*.log
+*.pth
+*.txt
+**/__pycache__
+**/data
+**mri_dl.py
+**GUI_.py
