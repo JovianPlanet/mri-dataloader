@@ -90,57 +90,64 @@ class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
     def make_dl(self):
 
         with open('template.txt', 'r') as template:
-            
-            with open('dl.py', 'x') as dl:
+            try:
+                with open('dl.py', 'x') as dl:
+                    for line in template:
 
-                for line in template:
+                        if "self.path = './data/train'" in line:
+                            dl.write(line.replace('./data/train', self.dir))
 
-                    if "self.path = './data/train'" in line:
-                        dl.write(line.replace('./data/train', self.dir))
+                        elif "self.mri_name = 'T1.nii'" in line:
+                            if self.load_mri_cb.isChecked():
+                                dl.write(line.replace('T1.nii', self.mri_name_le.text()))
+                            else:
+                                dl.write(line)
 
-                    elif "self.mri_name = 'T1.nii'" in line:
-                        if self.load_mri_cb.isChecked():
-                            dl.write(line.replace('T1.nii', self.mri_name_le.text()))
+                        elif "self.labels_name = None" in line:
+                            if self.load_labels_cb.isChecked():
+                                dl.write(line.replace('None', "'"+self.label_name_le.text()+"'"))
+                            else:
+                                dl.write(line)
+
+                        elif "self.dims = False" in line:
+                            if self.resize_cb.isChecked():
+                                dl.write(line.replace('False', f'({self.width_spinbox.value()}, {self.height_spinbox.value()})', -1))
+                            else:
+                                dl.write(line)
+
+                        elif "self.remove_bgnd = False" in line:
+                            if self.bgnd_cb.isChecked():
+                                dl.write(line.replace('False', 'True'))
+                            else:
+                                dl.write(line)
+
+                        elif "self.crop = False" in line:
+                            if self.crop_cb.isChecked():
+                                dl.write(line.replace('False', f'({self.low_slice_sb.value()}, {self.up_slice_sb.value()})', -1))
+                            else:
+                                dl.write(line)
+
                         else:
                             dl.write(line)
 
-                    elif "self.labels_name = None" in line:
-                        if self.load_labels_cb.isChecked():
-                            dl.write(line.replace('None', "'"+self.label_name_le.text()+"'"))
-                        else:
-                            dl.write(line)
-
-                    elif "self.dims = False" in line:
-                        if self.resize_cb.isChecked():
-                            dl.write(line.replace('False', f'({self.width_spinbox.value()}, {self.height_spinbox.value()})', -1))
-                        else:
-                            dl.write(line)
-
-                    elif "self.remove_bgnd = False" in line:
-                        if self.bgnd_cb.isChecked():
-                            dl.write(line.replace('False', 'True'))
-                        else:
-                            dl.write(line)
-
-                    elif "self.crop = False" in line:
-                        if self.crop_cb.isChecked():
-                            dl.write(line.replace('False', f'({self.low_slice_sb.value()}, {self.up_slice_sb.value()})', -1))
-                        else:
-                            dl.write(line)
-
-                    else:
-                        dl.write(line)
+            except:
+                self.file_error()
 
         self.close()
 
         return
+
+    def file_error(self):
+        dlg = QtWidgets.QDialog(self)
+        dlg.setWindowTitle("HELLO!")
+        dlg.exec()
 
 def main():
 
     app = QtWidgets.QApplication(sys.argv)
     form = GUI()
     form.show()
-    app.exec_()
+    sys.exit(app.exec_())#app.exec_()
 
 if __name__ == '__main__':
 
