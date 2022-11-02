@@ -4,9 +4,7 @@
 #        Catedra         #
 # David Jimenez Murillo  #
 
-# Anadir checkbox para incluir o descartar slices de solo background
 # Cambiar tipo de dato de la imagen?
-# Checkbox para resize antes de especificar nuevo tamano?
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 import sys
@@ -26,7 +24,7 @@ class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
         self.resize_cb.stateChanged.connect(self.update_gui)
         self.load_mri_cb.stateChanged.connect(self.update_gui)
         self.load_labels_cb.stateChanged.connect(self.update_gui)
-        self.dir = './data'
+        self.dir = './data/train'
 
     def get_dir(self):
 
@@ -97,18 +95,38 @@ class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
 
                 for line in template:
 
-                    if "self.path = './data'" in line:
-                        dl.write(line.replace('./data', self.dir))
+                    if "self.path = './data/train'" in line:
+                        dl.write(line.replace('./data/train', self.dir))
 
-                    elif "self.mri_name = None" in line:
-                        dl.write(line.replace('None', "'"+self.mri_name_le.text()+"'"))
+                    elif "self.mri_name = 'T1.nii'" in line:
+                        if self.load_mri_cb.isChecked():
+                            dl.write(line.replace('T1.nii', self.mri_name_le.text()))
+                        else:
+                            dl.write(line)
 
                     elif "self.labels_name = None" in line:
-                        dl.write(line.replace('None', "'"+self.label_name_le.text()+"'"))
+                        if self.load_labels_cb.isChecked():
+                            dl.write(line.replace('None', "'"+self.label_name_le.text()+"'"))
+                        else:
+                            dl.write(line)
 
-                    elif "self.dims = None" in line:
+                    elif "self.dims = False" in line:
                         if self.resize_cb.isChecked():
-                            dl.write(line.replace('None', f'({self.width_spinbox.value()}, {self.height_spinbox.value()})', -1))
+                            dl.write(line.replace('False', f'({self.width_spinbox.value()}, {self.height_spinbox.value()})', -1))
+                        else:
+                            dl.write(line)
+
+                    elif "self.remove_bgnd = False" in line:
+                        if self.bgnd_cb.isChecked():
+                            dl.write(line.replace('False', 'True'))
+                        else:
+                            dl.write(line)
+
+                    elif "self.crop = False" in line:
+                        if self.crop_cb.isChecked():
+                            dl.write(line.replace('False', f'({self.low_slice_sb.value()}, {self.up_slice_sb.value()})', -1))
+                        else:
+                            dl.write(line)
 
                     else:
                         dl.write(line)
