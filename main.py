@@ -23,6 +23,9 @@ class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
         self.generate_button.clicked.connect(self.make_dl)
         self.bgnd_cb.stateChanged.connect(self.update_gui)
         self.crop_cb.stateChanged.connect(self.update_gui)
+        self.resize_cb.stateChanged.connect(self.update_gui)
+        self.load_mri_cb.stateChanged.connect(self.update_gui)
+        self.load_labels_cb.stateChanged.connect(self.update_gui)
         self.dir = None
 
     def get_dir(self):
@@ -45,8 +48,37 @@ class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
 
         if self.crop_cb.isChecked():
             self.bgnd_cb.setEnabled(False)
+            self.up_slice_sb.setEnabled(True)
+            self.low_slice_sb.setEnabled(True)
         else:
             self.bgnd_cb.setEnabled(True)
+            self.up_slice_sb.setEnabled(False)
+            self.low_slice_sb.setEnabled(False)
+
+        if self.resize_cb.isChecked():
+            self.width_spinbox.setEnabled(True)
+            self.height_spinbox.setEnabled(True)
+        else:
+            self.width_spinbox.setEnabled(False)
+            self.height_spinbox.setEnabled(False)
+
+        if self.load_mri_cb.isChecked():
+            self.mri_name_label.setEnabled(True)
+            self.mri_name_le.setEnabled(True)
+        else:
+            self.mri_name_label.setEnabled(False)
+            self.mri_name_le.setEnabled(False)
+
+        if self.load_labels_cb.isChecked():
+            self.label_name_label.setEnabled(True)
+            self.label_name_le.setEnabled(True)
+            if not self.crop_cb.isChecked():
+                self.bgnd_cb.setEnabled(True)
+        else:
+            self.label_name_label.setEnabled(False)
+            self.label_name_le.setEnabled(False)
+            #if self.crop_cb.isChecked():
+            self.bgnd_cb.setEnabled(False)
 
 
     def make_dl(self):
