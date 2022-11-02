@@ -26,13 +26,12 @@ class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
         self.resize_cb.stateChanged.connect(self.update_gui)
         self.load_mri_cb.stateChanged.connect(self.update_gui)
         self.load_labels_cb.stateChanged.connect(self.update_gui)
-        self.dir = None
+        self.dir = './data'
 
     def get_dir(self):
 
         self.dir = QtWidgets.QFileDialog.getExistingDirectory(self, 'Open Directory')
         self.path_edit.setText(self.dir)
-
         return
 
     def update_gui(self):
@@ -98,61 +97,23 @@ class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
 
                 for line in template:
 
-                    if "self.path = 'dir_path'" in line:
+                    if "self.path = './data'" in line:
+                        dl.write(line.replace('./data', self.dir))
 
-                        dl.write(line.replace('dir_path', self.dir))#(''.join(l[:-1], self.dir))
+                    elif "self.mri_name = None" in line:
+                        dl.write(line.replace('None', "'"+self.mri_name_le.text()+"'"))
 
-                    break
+                    elif "self.labels_name = None" in line:
+                        dl.write(line.replace('None', "'"+self.label_name_le.text()+"'"))
 
-                if self.resize_cb.isChecked():
+                    elif "self.dims = None" in line:
+                        if self.resize_cb.isChecked():
+                            dl.write(line.replace('None', f'({self.width_spinbox.value()}, {self.height_spinbox.value()})', -1))
 
-                    for line in template:
+                    else:
+                        dl.write(line)
 
-                        if 'self.dims = (dims)' in line:
-
-                            dl.write(line.replace('(dims)', 
-                                                  f'({self.width_spinbox.value()}, {self.height_spinbox.value()})', 
-                                                  -1)
-                            )
-
-                else:
-
-                    for line in template:
-
-                        if 'self.dims = (dims)' in line or 'image = image.resize(self.dims)' in line:
-
-                            dl.write(line.replace(''))
-
-
-                    # elif 'self.ext = []' in line:
-
-                    #     ext = []
-                    #     s = ', '
-
-                    #     if self.png_cb.isChecked():
-                    #         ext.append("'png'")
-                    #     if self.jpg_cb.isChecked():
-                    #         ext.append("'jpg'")
-                    #     if self.bmp_cb.isChecked():
-                    #         ext.append("'bmp'")
-
-                    #     dl.write(line.replace('[]', '[{}]'.format(s.join(ext))))
-
-                    # elif 'self.transform = transforms' in line:
-
-                    #     tr = []
-                    #     s = ', '
-
-                    #     if self.toGS_cb.isChecked():
-                    #         tr.append('transforms.Grayscale()')
-                    #     if self.toTensor_cb.isChecked():
-                    #         tr.append('transforms.ToTensor()')
-
-                    #     dl.write(line.replace('transforms', 'transforms.Compose([{}])'.format(s.join(tr))))
-
-                    # else:
-
-                    #     dl.write(line)
+        self.close()
 
         return
 
