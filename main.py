@@ -41,19 +41,27 @@ class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
             self.up_slice_sb.setEnabled(False)
             self.low_slice_sb.setEnabled(False)
             self.crop_cb.setEnabled(False)
+            self.low_slice_label.setEnabled(False)
+            self.up_slice_label.setEnabled(False)
         else:
             self.up_slice_sb.setEnabled(True)
             self.low_slice_sb.setEnabled(True)
             self.crop_cb.setEnabled(True)
+            self.low_slice_label.setEnabled(True)
+            self.up_slice_label.setEnabled(True)
 
         if self.crop_cb.isChecked():
             self.bgnd_cb.setEnabled(False)
             self.up_slice_sb.setEnabled(True)
             self.low_slice_sb.setEnabled(True)
+            self.low_slice_label.setEnabled(True)
+            self.up_slice_label.setEnabled(True)
         else:
             self.bgnd_cb.setEnabled(True)
             self.up_slice_sb.setEnabled(False)
             self.low_slice_sb.setEnabled(False)
+            self.low_slice_label.setEnabled(False)
+            self.up_slice_label.setEnabled(False)
 
         if self.resize_cb.isChecked():
             self.width_spinbox.setEnabled(True)
@@ -77,8 +85,9 @@ class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
         else:
             self.label_name_label.setEnabled(False)
             self.label_name_le.setEnabled(False)
-            #if self.crop_cb.isChecked():
             self.bgnd_cb.setEnabled(False)
+            if self.bgnd_cb.isChecked():
+                self.bgnd_cb.setChecked(False)
 
 
     def make_dl(self):

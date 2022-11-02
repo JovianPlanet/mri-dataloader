@@ -661,7 +661,7 @@ Dataset Generator</string>
          </spacer>
         </item>
         <item>
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="low_slice_label">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -717,7 +717,7 @@ Dataset Generator</string>
          </spacer>
         </item>
         <item>
-         <widget class="QLabel" name="label_2">
+         <widget class="QLabel" name="up_slice_label">
           <property name="enabled">
            <bool>false</bool>
           </property>
