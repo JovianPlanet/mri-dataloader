@@ -7,6 +7,7 @@
 # Cambiar tipo de dato de la imagen?
 
 from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5.QtWidgets import QDialog, QPushButton, QDialogButtonBox, QVBoxLayout, QLabel
 import sys
 import GUI
 import time
@@ -131,20 +132,45 @@ class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
                             dl.write(line)
 
             except:
-                self.file_error()
+                self.file_error('hola')
 
         self.close()
 
         return
 
-    def file_error(self):
-        dlg = QtWidgets.QDialog(self)
-        dlg.setWindowTitle("HELLO!")
-        dlg.exec()
+    def file_error(self, s):
+        print("click", s)
+
+        dlg = ErrorDialog(self)
+        if dlg.exec():
+            print("Success!")
+        else:
+            print("Cancel!")
+        return
+
+
+class ErrorDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.setWindowTitle("Error!")
+
+        QBtn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+
+        self.buttonBox = QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+        self.layout = QVBoxLayout()
+        message = QLabel("Something happened, is that OK?")
+        self.layout.addWidget(message)
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
 
 def main():
 
     app = QtWidgets.QApplication(sys.argv)
+    #app.setQuitOnLastWindowClosed(False)
     form = GUI()
     form.show()
     sys.exit(app.exec_())#app.exec_()
