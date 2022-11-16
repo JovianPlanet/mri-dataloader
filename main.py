@@ -124,7 +124,12 @@ class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
 
                         elif "self.crop = False" in line:
                             if self.crop_cb.isChecked():
+                                # if self.low_slice_sb.value() < up_slice_sb.value():
+                                # print('Es menor')
                                 dl.write(line.replace('False', f'({self.low_slice_sb.value()}, {self.up_slice_sb.value()})', -1))
+                                # else:
+                                # print('Es mayor')
+                                # self.crop_error('ERROR: Low slice must be smaller than upper slice')
                             else:
                                 dl.write(line)
 
@@ -132,9 +137,7 @@ class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
                             dl.write(line)
 
             except:
-                self.file_error('hola')
-
-        self.close()
+                self.file_error('File already exists')
 
         return
 
@@ -146,6 +149,7 @@ class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
             print("Success!")
         else:
             print("Cancel!")
+        del dlg
         return
 
 
