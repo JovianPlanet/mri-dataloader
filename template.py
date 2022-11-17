@@ -56,6 +56,7 @@ class MRI_DS(Dataset):
             self.df = pd.DataFrame(self.L, columns=['Subject', 'Slice', 'Path MRI'])
 
         self.df = self.df.assign(id=self.df.index.values)
+        print(f'dataframe: \n{self.df} \n')
 
     def __len__(self):
 

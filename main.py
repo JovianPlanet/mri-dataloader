@@ -4,13 +4,12 @@
 #        Catedra         #
 # David Jimenez Murillo  #
 
-# Cambiar tipo de dato de la imagen?
-
 from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtWidgets import QDialog, QPushButton, QDialogButtonBox, QVBoxLayout, QLabel
+from PyQt5.QtWidgets import QDialog, QPushButton, QDialogButtonBox, QVBoxLayout, QLabel, QMessageBox
 import sys
 import GUI
 import time
+import os
 
 class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
 
@@ -90,6 +89,8 @@ class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
 
     def make_dl(self):
 
+        flag=False
+
         with open('template.txt', 'r') as template:
             try:
                 with open('dl.py', 'x') as dl:
@@ -123,13 +124,17 @@ class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
                                 dl.write(line)
 
                         elif "self.crop = False" in line:
+                            print(f'crop false in line')
                             if self.crop_cb.isChecked():
-                                # if self.low_slice_sb.value() < up_slice_sb.value():
-                                # print('Es menor')
-                                dl.write(line.replace('False', f'({self.low_slice_sb.value()}, {self.up_slice_sb.value()})', -1))
-                                # else:
-                                # print('Es mayor')
-                                # self.crop_error('ERROR: Low slice must be smaller than upper slice')
+                                print(f'crop is checked')
+                                if self.low_slice_sb.value() < self.up_slice_sb.value():
+                                    print('Es menor')
+                                    dl.write(line.replace('False', f'({self.low_slice_sb.value()}, {self.up_slice_sb.value()})', -1))
+                                else:
+                                    print('Es mayor')
+                                    self.show_message('ERROR: Low slice must be smaller than upper slice', True)
+                                    flag=True
+                                    break
                             else:
                                 dl.write(line)
 
@@ -137,47 +142,51 @@ class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
                             dl.write(line)
 
             except:
-                self.file_error('File already exists')
+                self.show_message('El archivo ya existe, por favor borrelo e intente de nuevo', False)
+                return
+
+        if flag:
+            os.remove('dl.py')
+        else:
+            self.show_message('El dataset fue creado exitosamente', False)
+            self.close()
 
         return
 
-    def file_error(self, s):
+    def show_message(self, s, rem):
         print("click", s)
 
         dlg = ErrorDialog(self)
+        dlg.message.setText(s)
         if dlg.exec():
             print("Success!")
-        else:
-            print("Cancel!")
-        del dlg
-        return
+
 
 
 class ErrorDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.setWindowTitle("Error!")
+        self.setWindowTitle("Atención")
 
-        QBtn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+        QBtn = QDialogButtonBox.Ok
 
         self.buttonBox = QDialogButtonBox(QBtn)
         self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
 
         self.layout = QVBoxLayout()
-        message = QLabel("Something happened, is that OK?")
-        self.layout.addWidget(message)
-        self.layout.addWidget(self.buttonBox)
+        self.message = QLabel(" ")
+        self.layout.addWidget(self.message)
+        self.layout.addWidget(self.buttonBox, alignment=QtCore.Qt.AlignCenter)
         self.setLayout(self.layout)
+
 
 def main():
 
     app = QtWidgets.QApplication(sys.argv)
-    #app.setQuitOnLastWindowClosed(False)
     form = GUI()
     form.show()
-    sys.exit(app.exec_())#app.exec_()
+    sys.exit(app.exec_())
 
 if __name__ == '__main__':
 
