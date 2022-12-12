@@ -11,6 +11,8 @@ import GUI
 import time
 import os
 
+from template import template
+
 class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
 
     def __init__(self):
@@ -91,59 +93,58 @@ class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
 
         flag=False
 
-        with open('template.txt', 'r') as template:
-            try:
-                with open('dl.py', 'x') as dl:
-                    for line in template:
+        try:
+            with open('dl.py', 'x') as dl:
+                for line in template.splitlines(keepends=True):
 
-                        if "self.path = './data/train'" in line:
-                            dl.write(line.replace('./data/train', self.dir))
+                    if "self.path = './data/train'" in line:
+                        dl.write(line.replace('./data/train', self.dir))
 
-                        elif "self.mri_name = 'T1.nii'" in line:
-                            if self.load_mri_cb.isChecked():
-                                dl.write(line.replace('T1.nii', self.mri_name_le.text()))
-                            else:
-                                dl.write(line)
-
-                        elif "self.labels_name = None" in line:
-                            if self.load_labels_cb.isChecked():
-                                dl.write(line.replace('None', "'"+self.label_name_le.text()+"'"))
-                            else:
-                                dl.write(line)
-
-                        elif "self.dims = False" in line:
-                            if self.resize_cb.isChecked():
-                                dl.write(line.replace('False', f'({self.width_spinbox.value()}, {self.height_spinbox.value()})', -1))
-                            else:
-                                dl.write(line)
-
-                        elif "self.remove_bgnd = False" in line:
-                            if self.bgnd_cb.isChecked():
-                                dl.write(line.replace('False', 'True'))
-                            else:
-                                dl.write(line)
-
-                        elif "self.crop = False" in line:
-                            print(f'crop false in line')
-                            if self.crop_cb.isChecked():
-                                print(f'crop is checked')
-                                if self.low_slice_sb.value() < self.up_slice_sb.value():
-                                    print('Es menor')
-                                    dl.write(line.replace('False', f'({self.low_slice_sb.value()}, {self.up_slice_sb.value()})', -1))
-                                else:
-                                    print('Es mayor')
-                                    self.show_message('ERROR: Low slice must be smaller than upper slice', True)
-                                    flag=True
-                                    break
-                            else:
-                                dl.write(line)
-
+                    elif "self.mri_name = 'T1.nii'" in line:
+                        if self.load_mri_cb.isChecked():
+                            dl.write(line.replace('T1.nii', self.mri_name_le.text()))
                         else:
                             dl.write(line)
 
-            except:
-                self.show_message('El archivo ya existe, por favor borrelo e intente de nuevo', False)
-                return
+                    elif "self.labels_name = None" in line:
+                        if self.load_labels_cb.isChecked():
+                            dl.write(line.replace('None', "'"+self.label_name_le.text()+"'"))
+                        else:
+                            dl.write(line)
+
+                    elif "self.dims = False" in line:
+                        if self.resize_cb.isChecked():
+                            dl.write(line.replace('False', f'({self.width_spinbox.value()}, {self.height_spinbox.value()})', -1))
+                        else:
+                            dl.write(line)
+
+                    elif "self.remove_bgnd = False" in line:
+                        if self.bgnd_cb.isChecked():
+                            dl.write(line.replace('False', 'True'))
+                        else:
+                            dl.write(line)
+
+                    elif "self.crop = False" in line:
+                        print(f'crop false in line')
+                        if self.crop_cb.isChecked():
+                            print(f'crop is checked')
+                            if self.low_slice_sb.value() < self.up_slice_sb.value():
+                                print('Es menor')
+                                dl.write(line.replace('False', f'({self.low_slice_sb.value()}, {self.up_slice_sb.value()})', -1))
+                            else:
+                                print('Es mayor')
+                                self.show_message('ERROR: Low slice must be smaller than upper slice', True)
+                                flag=True
+                                break
+                        else:
+                            dl.write(line)
+
+                    else:
+                        dl.write(line)
+
+        except:
+            self.show_message('El archivo ya existe, por favor borrelo e intente de nuevo', False)
+            return
 
         if flag:
             os.remove('dl.py')
