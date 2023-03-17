@@ -20,7 +20,7 @@ class MRI_DS(Dataset):
         self.remove_bgnd = False
         self.crop = False
 
-        self.subjects = next(os.walk(self.path))[1] # [2]: lists files; [1]: lists subdirectories; [0]: ?
+        self.subjects = next(os.walk(self.path))[1]
 
         self.L = []
 

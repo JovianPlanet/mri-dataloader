@@ -64,10 +64,14 @@ class GUI(QtWidgets.QMainWindow, GUI.Ui_Form):
 
         if self.resize_cb.isChecked():
             self.width_spinbox.setEnabled(True)
+            self.width_label.setEnabled(True)
             self.height_spinbox.setEnabled(True)
+            self.height_label.setEnabled(True)
         else:
             self.width_spinbox.setEnabled(False)
+            self.width_label.setEnabled(True)
             self.height_spinbox.setEnabled(False)
+            self.height_label.setEnabled(False)
 
         if self.load_mri_cb.isChecked():
             self.mri_name_label.setEnabled(True)
